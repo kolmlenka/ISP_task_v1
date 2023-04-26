@@ -6,4 +6,4 @@ for i in range (0, n+1):
     with open(name, "r") as my_file:
         cur_json = my_file.read()
     current = json.loads(cur_json)
-
+    print(current["activity"]["root"]["bounds"])
