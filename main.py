@@ -1,6 +1,7 @@
 import json
 n = 30#72218
 aspect_ratios = set()
+click = -1
 for i in range (0, n+1):
     name = 'unique_uis/combined/' + str(i) + '.json'
     print(name)
@@ -11,5 +12,9 @@ for i in range (0, n+1):
     b = current["activity"]["root"]["bounds"][3]
     res = a/b
     aspect_ratios.add(round(res, 4))
+    print(current["activity"]["root"]["clickable"])
+    if (current["activity"]["root"]["clickable"] == False):
+        click += 1
 print('отношения сторон: ', end = '')
 print(aspect_ratios)
+print ('неинтерактивных скринов: ' + str(click))
