@@ -1,7 +1,7 @@
 import json
 from PIL import Image
 import os.path
-n = 200 #72218
+n = 1000 #72218
 aspect_ratios = set()
 click = -1
 for i in range (0, n+1):
