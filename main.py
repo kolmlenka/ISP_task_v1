@@ -22,6 +22,7 @@ for i in range (0, n+1):
             cur_json = my_file.read()
         current = json.loads(cur_json)
         print(deepth(current, some_list = []))
+        
         #flag = True
         #clickable = set()
         #while flag == True:
@@ -35,15 +36,6 @@ for i in range (0, n+1):
                     #clickable.add(current["activity"]["root"]["children"][i]["clickable"])
             #flag = False
 
-        #keys = current.keys()
-        #for k in keys:
-            #if type(current[k]) is dict
-        #print(current)
-        #k = list(current["activity"]["root"].keys())
-        #print(k)
-        #print(k.count('children'))
-        #if (current["activity"]["root"]["clickable"] == False):
-            #click += 1
     if (os.path.exists(name_jpg)):
         img = Image.open(name_jpg)
         width, height = img.size
