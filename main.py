@@ -1,9 +1,19 @@
 import json
 from PIL import Image
 import os.path
-n = 1000 #72218
+
+n = 2 #72218
 aspect_ratios = set()
-click = -1
+click = 0
+
+def deepth(dictionary, some_list = []):
+    for k in dictionary.keys():
+        if type(dictionary[k]) is (str or bool):
+            some_list += ['1']
+        elif type(dictionary[k]) is (dict or list):
+            deepth(dictionary[k], some_list)
+    return len(some_list)
+
 for i in range (0, n+1):
     name_json = 'unique_uis/combined/' + str(i) + '.json'
     name_jpg = 'unique_uis/combined/' + str(i) + '.jpg'
@@ -11,15 +21,31 @@ for i in range (0, n+1):
         with open(name_json, "r") as my_file:
             cur_json = my_file.read()
         current = json.loads(cur_json)
-        if (current["activity"]["root"]["clickable"] == False):
-            click += 1
-    # a = current["activity"]["root"]["bounds"][2]
-    # b = current["activity"]["root"]["bounds"][3]
-    # res = a/b
-    # aspect_ratios.add(round(res, 4))
+        print(deepth(current, some_list = []))
+        #flag = True
+        #clickable = set()
+        #while flag == True:
+            #print(current["activity"]["root"]["clickable"])
+            #clickable.add(current["activity"]["root"]["clickable"])
+            #for i in range(len(current["activity"]["root"]["children"])):
+                #print(current["activity"]["root"]["children"][i]["clickable"])
+                #clickable.add(current["activity"]["root"]["children"][i]["clickable"])
+                #for i in range(current["activity"]["root"]["children"][i]["children"]):
+                    #print(current["activity"]["root"]["children"][i]["children"][])
+                    #clickable.add(current["activity"]["root"]["children"][i]["clickable"])
+            #flag = False
+
+        #keys = current.keys()
+        #for k in keys:
+            #if type(current[k]) is dict
+        #print(current)
+        #k = list(current["activity"]["root"].keys())
+        #print(k)
+        #print(k.count('children'))
+        #if (current["activity"]["root"]["clickable"] == False):
+            #click += 1
     if (os.path.exists(name_jpg)):
         img = Image.open(name_jpg)
-        #print(img.size)
         width, height = img.size
         res = width / height
         aspect_ratios.add(round(res, 4))
