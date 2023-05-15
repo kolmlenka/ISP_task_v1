@@ -9,24 +9,23 @@ count = 0
 y_list = [] #list that consists of the depths of trees
 x_list = [] #list that consists of the numbers of trees
 
-def deepth(dictionary, some_list = []):
+def deepth(dictionary, d=0):
     for k in dictionary.keys():
         if type(dictionary[k]) is (str or bool):
-            some_list += ['1']
+            d += 1
         elif type(dictionary[k]) is (dict or list):
-            deepth(dictionary[k], some_list)
-    return len(some_list)
+            deepth(dictionary[k], d)
+    return d
 
-def clickable(dictionary, click = set()):
+def clickable(dictionary, flag=False):
     for k in dictionary.keys():
-        if k == 'clickable':
-            click.add(dictionary[k])
-        elif type(dictionary[k]) is (dict or list):
-            clickable(dictionary[k], click)
-    if False in click:
-        return 1
-    else:
-        return 0
+        if (k == "clickable") and (dictionary[k] is True):
+            print(k, dictionary[k])
+            flag = True
+            break
+        elif type(dictionary[k]) is dict:
+            clickable(dictionary[k], flag)
+    return flag
 
 for i in range (0, n+1):
     name_json = 'unique_uis/combined/' + str(i) + '.json'
@@ -38,10 +37,10 @@ for i in range (0, n+1):
         current = json.loads(cur_json)
 
         x_list += [i]
-        y_list += [deepth(current, some_list = [])]
-        #print(deepth(current, some_list = []))
+        y_list += [deepth(current, d=0)]
 
-        count += clickable(current, click = set())
+        if clickable(current, flag=False) is True:
+            count += 1
 
     if (os.path.exists(name_jpg)):
         img = Image.open(name_jpg)
@@ -59,4 +58,4 @@ plt.plot(x_list, y_list)
 plt.grid()
 plt.show()
 
-print ('неинтерактивных скринов: ' + str(count))
+print ('интерактивных скринов: ' + str(count))
