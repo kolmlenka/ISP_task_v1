@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 n = 1000 #72218
 aspect_ratios = set()
 count = 0
-y_list = [] #список в котором собираю все глубины деревьев
-x_list = [] #список в котором номера деревьев
+y_list = [] #list that consists of the depths of trees
+x_list = [] #list that consists of the numbers of trees
 
 def deepth(dictionary, some_list = []):
     for k in dictionary.keys():
