@@ -31,7 +31,7 @@ def clickable(dictionary, click = set()):
 for i in range (0, n+1):
     name_json = 'unique_uis/combined/' + str(i) + '.json'
     name_jpg = 'unique_uis/combined/' + str(i) + '.jpg'
-    
+
     if (os.path.exists(name_json)):
         with open(name_json, "r") as my_file:
             cur_json = my_file.read()
@@ -48,12 +48,12 @@ for i in range (0, n+1):
         width, height = img.size
         res = width / height
         aspect_ratios.add(round(res, 4))
-        
+
 print('отношения сторон: ', end = '')
 print(aspect_ratios)
 
 plt.title('График распределения глубин UI деревьев', fontsize = 14, color = 'black')
-plt.xlabel('Номер дерава')
+plt.xlabel('Номер дерева')
 plt.ylabel('Глубина дерева')
 plt.plot(x_list, y_list)
 plt.grid()
