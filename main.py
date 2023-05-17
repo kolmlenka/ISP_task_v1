@@ -3,59 +3,66 @@ from PIL import Image
 import os.path
 import matplotlib.pyplot as plt
 
-n = 1000 #72218
+n = 100  # 72218
 aspect_ratios = set()
 count = 0
-y_list = [] #list that consists of the depths of trees
-x_list = [] #list that consists of the numbers of trees
+list_of_depths = []
 
-def deepth(dictionary, d=0):
+
+def deepth(dictionary, d=None):
+    if not d:
+        d = 0
     for k in dictionary.keys():
-        if type(dictionary[k]) is (str or bool):
+        if k == "children":
             d += 1
-        elif type(dictionary[k]) is (dict or list):
-            deepth(dictionary[k], d)
+            for j in range(len(dictionary[k])):
+                d += deepth(dictionary[k][j])
+        elif type(dictionary[k]) is dict:
+            d += deepth(dictionary[k])
     return d
 
-def clickable(dictionary, flag=False):
+
+def clickable(dictionary, flag=None):
+    if not flag:
+        flag = False
     for k in dictionary.keys():
         if (k == "clickable") and (dictionary[k] is True):
-            print(k, dictionary[k])
-            flag = True
-            break
+            return True
         elif type(dictionary[k]) is dict:
-            clickable(dictionary[k], flag)
+            flag = clickable(dictionary[k], flag)
+        elif k == "children":
+            for j in range(len(dictionary[k])):
+                flag = clickable(dictionary[k][j], flag)
     return flag
 
-for i in range (0, n+1):
+
+for i in range(0, n+1):
     name_json = 'unique_uis/combined/' + str(i) + '.json'
     name_jpg = 'unique_uis/combined/' + str(i) + '.jpg'
 
-    if (os.path.exists(name_json)):
+    if os.path.exists(name_json):
         with open(name_json, "r") as my_file:
             cur_json = my_file.read()
         current = json.loads(cur_json)
 
-        x_list += [i]
-        y_list += [deepth(current, d=0)]
+        list_of_depths += [deepth(current)]
 
-        if clickable(current, flag=False) is True:
+        if clickable(current) is True:
             count += 1
 
-    if (os.path.exists(name_jpg)):
+    if os.path.exists(name_jpg):
         img = Image.open(name_jpg)
         width, height = img.size
         res = width / height
         aspect_ratios.add(round(res, 4))
 
-print('отношения сторон: ', end = '')
+print('отношения сторон: ', end='')
 print(aspect_ratios)
 
-plt.title('График распределения глубин UI деревьев', fontsize = 14, color = 'black')
-plt.xlabel('Номер дерева')
-plt.ylabel('Глубина дерева')
-plt.plot(x_list, y_list)
-plt.grid()
-plt.show()
+print('интерактивных скринов: ' + str(count))
 
-print ('интерактивных скринов: ' + str(count))
+fig = plt.figure(figsize=(6, 4))
+x = fig.add_subplot()
+x.hist(list_of_depths, 25)
+x.grid()
+plt.show()
