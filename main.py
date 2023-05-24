@@ -1,5 +1,5 @@
 import json
-from PIL import Image
+import imagesize
 import os.path
 import matplotlib.pyplot as plt
 
@@ -22,6 +22,19 @@ def deepth(dictionary, d=None):
     return d
 
 
+def depth(node):
+    if not node:
+        return 1
+    return max(depth(d) for d in node["children"])
+
+
+def test(node):
+    if not node:
+        return 1
+    for d in range(len(node["children"])):
+        return max(test(node["children"][d])) + 2
+
+
 def clickable(dictionary, flag=None):
     if not flag:
         flag = False
@@ -36,30 +49,29 @@ def clickable(dictionary, flag=None):
     return flag
 
 
-for i in range(0, n+1):
-    name_json = 'unique_uis/combined/' + str(i) + '.json'
-    name_jpg = 'unique_uis/combined/' + str(i) + '.jpg'
+for i in range(0, n + 1):
+    name_json = "unique_uis/combined/" + str(i) + ".json"
+    name_jpg = "unique_uis/combined/" + str(i) + ".jpg"
 
     if os.path.exists(name_json):
         with open(name_json, "r") as my_file:
             cur_json = my_file.read()
         current = json.loads(cur_json)
 
-        list_of_depths += [deepth(current)]
+        list_of_depths += [test(current["activity"]["root"])]
 
         if clickable(current) is True:
             count += 1
 
     if os.path.exists(name_jpg):
-        img = Image.open(name_jpg)
-        width, height = img.size
+        width, height = imagesize.get(name_jpg)
         res = width / height
         aspect_ratios.add(round(res, 4))
 
-print('отношения сторон: ', end='')
+print("отношения сторон: ", end="")
 print(aspect_ratios)
 
-print('интерактивных скринов: ' + str(count))
+print("интерактивных скринов: " + str(count))
 
 fig = plt.figure(figsize=(6, 4))
 x = fig.add_subplot()
