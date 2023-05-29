@@ -9,30 +9,12 @@ count = 0
 list_of_depths = []
 
 
-def deepth(dictionary, d=None):
-    if not d:
-        d = 0
-    for k in dictionary.keys():
-        if k == "children":
-            d += 1
-            for j in range(len(dictionary[k])):
-                d += deepth(dictionary[k][j])
-        elif type(dictionary[k]) is dict:
-            d += deepth(dictionary[k])
-    return d
-
-
 def depth(node):
     if not node:
+        return 0
+    if not node.get("children"):
         return 1
-    return max(depth(d) for d in node["children"])
-
-
-def test(node):
-    if not node:
-        return 1
-    for d in range(len(node["children"])):
-        return max(test(node["children"][d])) + 2
+    return max(depth(d) for d in node.get("children", [])) + 1
 
 
 def clickable(dictionary, flag=None):
@@ -58,7 +40,7 @@ for i in range(0, n + 1):
             cur_json = my_file.read()
         current = json.loads(cur_json)
 
-        list_of_depths += [test(current["activity"]["root"])]
+        list_of_depths += [depth(current["activity"]["root"])]
 
         if clickable(current) is True:
             count += 1
