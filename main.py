@@ -2,6 +2,7 @@ import json
 import imagesize
 import os.path
 import matplotlib.pyplot as plt
+from tqdm import trange
 
 n = 100  # 72218
 aspect_ratios = set()
@@ -31,7 +32,15 @@ def clickable(dictionary, flag=None):
     return flag
 
 
-for i in range(0, n + 1):
+def test(node):
+    if not node or not node.get("clickable"):
+        return False
+    for c in node.get("children", []):
+        flag = test(c)
+        return flag
+
+
+for i in trange(n + 1, desc="Screenshots ", unit=" screenshots"):
     name_json = "unique_uis/combined/" + str(i) + ".json"
     name_jpg = "unique_uis/combined/" + str(i) + ".jpg"
 
@@ -42,7 +51,7 @@ for i in range(0, n + 1):
 
         list_of_depths += [depth(current["activity"]["root"])]
 
-        if clickable(current) is True:
+        if test(current) is True:
             count += 1
 
     if os.path.exists(name_jpg):
