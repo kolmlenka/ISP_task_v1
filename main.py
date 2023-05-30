@@ -62,7 +62,6 @@ def main():
     for name_json in list_of_jsons:
         count += 1
         if count > limit:
-            print(count)
             break
         with open(name_json, "r") as my_file:
             cur_json = my_file.read()
