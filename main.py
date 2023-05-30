@@ -1,15 +1,3 @@
-import json
-import imagesize
-import os.path
-import matplotlib.pyplot as plt
-from tqdm import trange
-
-n = 100  # 72218
-aspect_ratios = set()
-count = 0
-list_of_depths = []
-
-
 def depth(node):
     if not node:
         return 0
@@ -18,17 +6,17 @@ def depth(node):
     return max(depth(d) for d in node.get("children", [])) + 1
 
 
-def clickable(dictionary, flag=None):
+def clickable(node, flag=None):
     if not flag:
         flag = False
-    for k in dictionary.keys():
-        if (k == "clickable") and (dictionary[k] is True):
+    for k in node.keys():
+        if (k == "clickable") and (node[k] is True):
             return True
-        elif type(dictionary[k]) is dict:
-            flag = clickable(dictionary[k], flag)
+        elif type(node[k]) is dict:
+            flag = clickable(node[k], flag)
         elif k == "children":
-            for j in range(len(dictionary[k])):
-                flag = clickable(dictionary[k][j], flag)
+            for j in range(len(node[k])):
+                flag = clickable(node[k][j], flag)
     return flag
 
 
@@ -36,36 +24,71 @@ def test(node):
     if not node or not node.get("clickable"):
         return False
     for c in node.get("children", []):
-        flag = test(c)
-        return flag
+        return test(c)
 
 
-for i in trange(n + 1, desc="Screenshots ", unit=" screenshots"):
-    name_json = "unique_uis/combined/" + str(i) + ".json"
-    name_jpg = "unique_uis/combined/" + str(i) + ".jpg"
+def main():
+    import json
+    import imagesize
+    import matplotlib.pyplot as plt
+    import argparse
+    # import tqdm
+    from pathlib import Path
 
-    if os.path.exists(name_json):
+    aspect_ratios = set()
+    count = 0
+    interactive = 0
+    list_of_depths = []
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "pathname",
+        type=Path,
+        help="Path to a Dataset",
+    )
+    parser.add_argument(
+        "--limit",
+        dest="n",
+        type=int,
+        help="number of screenshots to process",
+    )
+    args = parser.parse_args()
+
+    list_of_jsons = list(args.pathname.glob("*.json"))
+    if args.n is None:
+        limit = len(list_of_jsons)
+    else:
+        limit = args.n
+    for name_json in list_of_jsons:
+        count += 1
+        if count > limit:
+            print(count)
+            break
         with open(name_json, "r") as my_file:
             cur_json = my_file.read()
         current = json.loads(cur_json)
 
         list_of_depths += [depth(current["activity"]["root"])]
 
-        if test(current) is True:
-            count += 1
+        if clickable(current) is True:
+            interactive += 1
 
-    if os.path.exists(name_jpg):
+        name_jpg = name_json.with_suffix('.jpg')
         width, height = imagesize.get(name_jpg)
         res = width / height
         aspect_ratios.add(round(res, 4))
 
-print("отношения сторон: ", end="")
-print(aspect_ratios)
+    print("aspect ratios: ", end="")
+    print(aspect_ratios)
 
-print("интерактивных скринов: " + str(count))
+    print("interactive screenshots: " + str(interactive))
 
-fig = plt.figure(figsize=(6, 4))
-x = fig.add_subplot()
-x.hist(list_of_depths, 25)
-x.grid()
-plt.show()
+    fig = plt.figure(figsize=(6, 4))
+    x = fig.add_subplot()
+    x.hist(list_of_depths, 25)
+    x.grid()
+    plt.show()
+
+
+if __name__ == "__main__":
+    main()
